@@ -9,7 +9,7 @@
     <div class="col-lg-4">
       <img
         class="img-responsive center-block" 
-    src="https://loremflickr.com/320/240/food,dessert,restaurant/"
+        :src="restaurant.image"
         style="width: 250px;margin-bottom: 25px;"
       >
       <div class="contact-info-wrap">
@@ -31,10 +31,12 @@
     </div>
     <div class="col-lg-8">
       <p>{{ restaurant.description }}</p>
-      <a
+      <router-link
         class="btn btn-primary btn-border mr-2"
-        href="#"
-      >Dashboard</a>
+        :to="{name: 'restaurant-dashboard', params: {id: restaurant.id }}"
+      >
+      Dashboard
+      </router-link>
 
       <button
         v-if="restaurant.isFavorited"
