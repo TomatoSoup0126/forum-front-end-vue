@@ -1,6 +1,10 @@
 <template>
   <div class="container py-5">
-    <UserProfileCard />
+    <UserProfileCard 
+      :initialProfile="profile"
+      :currentUser="currentUser"
+      :isFollowed="isFollowed"
+      />
 <br>
 <div class="row">
   <div class="col-4">
@@ -1206,6 +1210,17 @@ const dummyData = {
   'isFollowed': false
 }
 
+const dummyUser = {
+  currentUser: {
+    id: 1,
+    name: '管理者',
+    email: 'root@example.com',
+    image: 'https://i.pravatar.cc/300',
+    isAdmin: true
+  },
+  isAuthenticated: true
+}
+
 
 export default {
 
@@ -1233,7 +1248,8 @@ export default {
         Followers:[],
         Followings:[]
       },
-      isFollowed: false
+      isFollowed: false,
+      currentUser:''
     }
   },
   
@@ -1263,7 +1279,8 @@ export default {
         Followings:dummyData.profile.Followings
       },
 
-      this.isFollowed = dummyData.isFollowed
+      this.isFollowed = dummyData.isFollowed,
+      this.currentUser = dummyUser.currentUser
     }
   }
 }
