@@ -65,6 +65,12 @@ export default new Router({
     },
 
     {
+      path: '/users/:id',
+      name: 'users-profile',
+      component: () => import('../views/User.vue')
+    },
+
+    {
       path: '*',
       name: 'not-found',
       component: NotFound
