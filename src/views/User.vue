@@ -11,7 +11,9 @@
     <UserFollowingCard />
   </div>
   <div class="col-8">
-    <UserCommentsCard />
+    <UserCommentsCard 
+      :Comments="Comments"
+      />
   </div>
 </div>
 <br>
@@ -1249,7 +1251,11 @@ export default {
         Followings:[]
       },
       isFollowed: false,
-      currentUser:''
+      currentUser:'',
+      Comments:[],
+      FavoritedRestaurants:[],
+      Followers:[],
+      Followings:[]
     }
   },
   
@@ -1280,7 +1286,11 @@ export default {
       },
 
       this.isFollowed = dummyData.isFollowed,
-      this.currentUser = dummyUser.currentUser
+      this.currentUser = dummyUser.currentUser,
+      this.Comments=dummyData.profile.Comments,
+      this.FavoritedRestaurants=dummyData.profile.FavoritedRestaurants,
+      this.Followers=dummyData.profile.Followers,
+      this.Followings=dummyData.profile.Followings
     }
   }
 }
