@@ -26,7 +26,9 @@
       />
   </div>
   <div class="col-8">
-    <UserFavoritedRestaurantsCard />
+    <UserFavoritedRestaurantsCard 
+      :favoritedRestaurants="FavoritedRestaurants"
+      />
   </div>
 </div>
       </div>
