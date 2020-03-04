@@ -23,7 +23,7 @@
           </ul>
       <router-link
         v-if="User.id === profile.id"
-        to="#"
+        :to="{name: 'users-edit', params: {id: User.id}}"
         class="btn btn-primary"
         >
         Edit   
