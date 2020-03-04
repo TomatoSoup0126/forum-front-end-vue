@@ -65,6 +65,12 @@ export default new Router({
     },
 
     {
+      path: '/users/:id/edit',
+      name: 'users-edit',
+      component: () => import('../views/UserEdit.vue')
+    },
+
+    {
       path: '/users/:id',
       name: 'users-profile',
       component: () => import('../views/User.vue')
@@ -74,6 +80,12 @@ export default new Router({
       path: '/admin',
       exact: true,
       redirect: '/admin/restaurants'
+    },
+
+    {
+      path: '/admin/categories',
+      name: 'admin-categories',
+      component: () => import('../views/AdminCategories.vue')
     },
 
     {
