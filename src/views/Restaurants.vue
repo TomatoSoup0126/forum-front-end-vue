@@ -85,10 +85,10 @@ export default {
             this.restaurants = data.restaurants
             this.totalPage = data.totalPage.length
         } catch (error) {
-          Toast.fire({
-          icon: 'error',
-          title: '無法取得餐廳資料，請稍後再試'
-        })
+            Toast.fire({
+                icon: 'error',
+                title: '無法取得餐廳資料，請稍後再試'
+            })
         }
 
     
