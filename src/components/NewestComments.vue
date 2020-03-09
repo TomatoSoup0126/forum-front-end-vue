@@ -10,14 +10,14 @@
       >
         <h4>
         <router-link
-          :to="{ name: 'restaurant', params: {id: comment.Restaurant.id}}"
+          :to="{ name: 'restaurant', params: {id: comment.RestaurantId}}"
         >
-          {{ comment.Restaurant.name }}
+          {{ comment.RestaurantId }}
         </router-link>
         </h4>
         <p>{{comment.text}}</p>by
          <router-link
-          :to="{ name: 'users-profile', params: {id: comment.User.id }}"
+          :to="{ name: 'users-profile', params: {id: comment.UserId }}"
         >
           {{ comment.User.name }}
         </router-link>
