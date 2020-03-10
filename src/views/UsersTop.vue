@@ -2,9 +2,40 @@
   <div class="container py-5">
     <NavTabs />
     <div class="row text-center">
-        <UserCard
+       <div 
+        class="col-3"
         v-for="user in users"
         :key="user.id"
+        >
+        <a href="#">
+          <router-link :to="{name: 'users-profile', params: {id: user.id}}">
+            <img :src="user.image | emptyImage" width="140px" height="140px" />
+          </router-link>
+        </a>
+        <h2>{{user.name}}</h2>
+        <span class="badge badge-secondary">追蹤人數：{{user.FollowerCount}}</span>
+        <p class="mt-3">
+          <button
+            v-if="user.isFollowed"
+            type="button"
+            class="btn btn-danger"
+            @click.stop.prevent="removeFollowing(user.id)"
+          >
+            取消追蹤
+          </button>
+          <button
+            v-else
+            type="button"
+            class="btn btn-primary"
+            @click.stop.prevent="addFollowing(user.id)"
+          >
+            追蹤
+          </button>
+        </p>
+      </div>
+        <UserCard
+        
+        
         :initial-user="user"
         />
     </div>
@@ -13,179 +44,17 @@
 
 <script>
 import NavTabs from '../components/NavTabs.vue'
-import UserCard from '../components/UserCard.vue'
 
-const dummyData = {
-    users: [
-        {
-            "id": 3,
-            "name": "user2",
-            "email": "user2@example.com",
-            "password": "$2a$10$SU.kuOzvTaOOd430wFIfce0rRZ36R/e1qy7m1QvwEio72M/whNyge",
-            "isAdmin": false,
-            "image": "https://i.imgur.com/2pV2Irz.gif",
-            "createdAt": "2019-11-08T17:52:01.923Z",
-            "updatedAt": "2019-11-13T17:19:54.433Z",
-            "Followers": [
-                {
-                    "id": 2,
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "$2a$10$axEII0959Sc9kdkYmoq2kumRdhxvW5feacxWSJAGBDxTmgf94JcTG",
-                    "isAdmin": false,
-                    "image": "https://i.imgur.com/Xr1TinX.png",
-                    "createdAt": "2019-11-08T17:52:01.328Z",
-                    "updatedAt": "2019-11-13T17:19:28.919Z",
-                    "Followship": {
-                        "followerId": 2,
-                        "followingId": 3,
-                        "createdAt": "2019-11-10T15:39:38.970Z",
-                        "updatedAt": "2019-11-10T15:39:38.970Z"
-                    }
-                },
-                {
-                    "id": 4,
-                    "name": "root",
-                    "email": "root@example.com",
-                    "password": "$2a$10$lkpL31VINZ.n/0VswEqsJOAilmXmO/UPrFuj715O74KxjTnPjPunC",
-                    "isAdmin": true,
-                    "image": "https://i.imgur.com/Ey363Yd.png",
-                    "createdAt": "2019-11-08T17:57:16.721Z",
-                    "updatedAt": "2019-11-08T18:16:30.721Z",
-                    "Followship": {
-                        "followerId": 4,
-                        "followingId": 3,
-                        "createdAt": "2019-11-10T15:40:33.990Z",
-                        "updatedAt": "2019-11-10T15:40:33.990Z"
-                    }
-                }
-            ],
-            "FollowerCount": 2,
-            "isFollowed": true
-        },
-        {
-            "id": 4,
-            "name": "root",
-            "email": "root@example.com",
-            "password": "$2a$10$lkpL31VINZ.n/0VswEqsJOAilmXmO/UPrFuj715O74KxjTnPjPunC",
-            "isAdmin": true,
-            "image": "https://i.imgur.com/Ey363Yd.png",
-            "createdAt": "2019-11-08T17:57:16.721Z",
-            "updatedAt": "2019-11-08T18:16:30.721Z",
-            "Followers": [
-                {
-                    "id": 2,
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "$2a$10$axEII0959Sc9kdkYmoq2kumRdhxvW5feacxWSJAGBDxTmgf94JcTG",
-                    "isAdmin": false,
-                    "image": "https://i.imgur.com/Xr1TinX.png",
-                    "createdAt": "2019-11-08T17:52:01.328Z",
-                    "updatedAt": "2019-11-13T17:19:28.919Z",
-                    "Followship": {
-                        "followerId": 2,
-                        "followingId": 4,
-                        "createdAt": "2019-11-10T15:39:35.109Z",
-                        "updatedAt": "2019-11-10T15:39:35.109Z"
-                    }
-                }
-            ],
-            "FollowerCount": 1,
-            "isFollowed": false
-        },
-        {
-            "id": 1,
-            "name": "路特",
-            "email": "root@example.com",
-            "password": "$2a$10$jXA5iarQmwLM0fD.pF46TexIJ9PFvshOLdG/dWVZJnYibqyeK.NHO",
-            "isAdmin": true,
-            "image": "https://i.imgur.com/fu6Vwqj.jpg",
-            "createdAt": "2019-11-08T17:52:00.809Z",
-            "updatedAt": "2019-11-09T10:10:38.804Z",
-            "Followers": [
-                {
-                    "id": 2,
-                    "name": "user1",
-                    "email": "user1@example.com",
-                    "password": "$2a$10$axEII0959Sc9kdkYmoq2kumRdhxvW5feacxWSJAGBDxTmgf94JcTG",
-                    "isAdmin": false,
-                    "image": "https://i.imgur.com/Xr1TinX.png",
-                    "createdAt": "2019-11-08T17:52:01.328Z",
-                    "updatedAt": "2019-11-13T17:19:28.919Z",
-                    "Followship": {
-                        "followerId": 2,
-                        "followingId": 1,
-                        "createdAt": "2019-11-10T15:39:37.480Z",
-                        "updatedAt": "2019-11-10T15:39:37.480Z"
-                    }
-                }
-            ],
-            "FollowerCount": 1,
-            "isFollowed": false
-        },
-        {
-            "id": 6,
-            "name": "user2",
-            "email": "user2@example.com",
-            "password": "$2a$10$jCVFnFNB/qQrlQb898gEseGgflP8vMq2Cx2caXGIjRABEo2AsMFJm",
-            "isAdmin": false,
-            "image": null,
-            "createdAt": "2019-11-08T17:57:17.207Z",
-            "updatedAt": "2019-11-08T17:57:17.207Z",
-            "Followers": [
-                {
-                    "id": 4,
-                    "name": "root",
-                    "email": "root@example.com",
-                    "password": "$2a$10$lkpL31VINZ.n/0VswEqsJOAilmXmO/UPrFuj715O74KxjTnPjPunC",
-                    "isAdmin": true,
-                    "image": "https://i.imgur.com/Ey363Yd.png",
-                    "createdAt": "2019-11-08T17:57:16.721Z",
-                    "updatedAt": "2019-11-08T18:16:30.721Z",
-                    "Followship": {
-                        "followerId": 4,
-                        "followingId": 6,
-                        "createdAt": "2019-11-10T15:40:35.789Z",
-                        "updatedAt": "2019-11-10T15:40:35.789Z"
-                    }
-                }
-            ],
-            "FollowerCount": 1,
-            "isFollowed": true
-        },
-        {
-            "id": 2,
-            "name": "user1",
-            "email": "user1@example.com",
-            "password": "$2a$10$axEII0959Sc9kdkYmoq2kumRdhxvW5feacxWSJAGBDxTmgf94JcTG",
-            "isAdmin": false,
-            "image": "https://i.imgur.com/Xr1TinX.png",
-            "createdAt": "2019-11-08T17:52:01.328Z",
-            "updatedAt": "2019-11-13T17:19:28.919Z",
-            "Followers": [],
-            "FollowerCount": 0,
-            "isFollowed": false
-        },
-        {
-            "id": 5,
-            "name": "user1",
-            "email": "user1@example.com",
-            "password": "$2a$10$xkUVufO3LJFmnv3tq4LbfOJkUhbEkCQznhkKnj6OBQP41ae3zD8eW",
-            "isAdmin": false,
-            "image": null,
-            "createdAt": "2019-11-08T17:57:16.968Z",
-            "updatedAt": "2019-11-08T17:57:16.968Z",
-            "Followers": [],
-            "FollowerCount": 0,
-            "isFollowed": false
-        }
-    ]
-}
+
+import usersAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
+import { emptyImageFilter } from './../utils/mixins'
+
 
 export default {
+  mixins: [emptyImageFilter],
   components: {
-    NavTabs,
-    UserCard
+    NavTabs
   },
 
 
@@ -200,9 +69,92 @@ export default {
   },
 
   methods: {
-    fetchUsers () {
-      this.users = dummyData.users
+    async  fetchUsers () {
+      try {
+          const {data, statusText} = await usersAPI.getTopUser()
+
+  
+          if (statusText !== 'OK') {
+              throw new Error(statusText)
+          }
+
+
+          this.users = data.users
+      } catch (error) {
+          Toast.fire({
+              icon: 'error',
+              title: '無法取得用戶資料，請稍後再試'
+          })
+      }
+       
+    },
+    
+
+    async addFollowing(userId) {
+      try {
+        const {data, statusText} = await usersAPI.addFollowing({
+          userId
+        })
+
+        if (statusText !== 'OK' ||  data.status !== 'success') {
+          throw new Error(statusText)
+        }
+
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user
+          }
+
+          return {
+            ...user,
+            FollowerCount: user.FollowerCount + 1,
+            isFollowed: true
+          }
+
+        }).sort((a,b)=> b.FollowerCount - a.FollowerCount)
+
+
+      } catch (error) {
+                         // eslint-disable-next-line
+        console.log(error)
+        Toast.fire({
+          icon:'error',
+          title: '無法加入追蹤，請稍後再試'
+        })
+
+
+      }
+    },
+
+    async removeFollowing (userId) {
+      try {
+        const { data, statusText } = await usersAPI.deleteFollowing({
+          userId
+        })
+
+        if (statusText !== 'OK' || data.status !== 'success') {
+          throw new Error(statusText)
+        }
+
+        this.users = this.users.map(user => {
+          if (user.id !== userId) {
+            return user
+          }
+
+          return {
+            ...user,
+            FollowerCount: user.FollowerCount - 1,
+            isFollowed: false
+          }
+        }).sort((a, b) => b.FollowerCount - a.FollowerCount)
+      } catch (error) {
+        Toast.fire({
+          type: 'error',
+          title: '無法取消追蹤，請稍後再試'
+        })
+      }
     }
+
   }
 }
 </script>
