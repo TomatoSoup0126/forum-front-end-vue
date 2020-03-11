@@ -2,6 +2,7 @@
   <div class="container py-5">
     <AdminRestaurantForm
       :initial-restaurant="restaurant"
+      :is-processing="isProcessing"
       @after-submit="handleAfterSubmit" 
       />
   </div>
@@ -10,27 +11,8 @@
 <script>
 import AdminRestaurantForm from '../components/AdminRestaurantForm.vue'
 
-const dummyData = {
-  'restaurant': {
-    'id': 1,
-    'name': 'Laurence Reynolds',
-    'tel': '1-657-067-3756 x9782',
-    'address': '187 Kirlin Squares',
-    'opening_hours': '08:00',
-    'description': 'sit est mollitia',
-    'image': 'https://loremflickr.com/320/240/restaurant,food/?random=91.29816290184887',
-    'viewCounts': 1,
-    'createdAt': '2019-07-30T16:24:55.432Z',
-    'updatedAt': '2019-07-30T17:26:43.260Z',
-    'CategoryId': 3,
-    'Category': {
-      'id': 3,
-      'name': '義大利料理',
-      'createdAt': '2019-07-30T16:24:55.429Z',
-      'updatedAt': '2019-07-30T16:24:55.429Z'
-    }
-  }
-}
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
 
 
 export default {
@@ -49,7 +31,8 @@ export default {
         description: '',
         image: '',
         openingHours: ''
-      }
+      },
+      isProcessing: false
     }
   },
 
@@ -58,30 +41,74 @@ export default {
     this.fetchRestaurant(id)
   },
 
+  beforeRouteUpdate (to, from, next) {
+    // 路由改變時重新抓取資料
+    const { id } = to.params
+    this.fetchRestaurant(id)
+    next()
+  },
+
   methods: {
-    handleAfterSubmit (formData) {
-      // 透過 API 將表單資料送到伺服器
-      for (let [name, value] of formData.entries()) {
-          // eslint-disable-next-line
-        console.log(name + ': ' + value)
+    async handleAfterSubmit (formData) {
+      try {
+          this.isProcessing = true
+          const { data, statusText } = await adminAPI.restaurant.update({
+            restaurantId: this.restaurant.id,
+            formData
+          })
+
+          if (statusText !== 'OK' || data.status !== 'success') {
+            throw new Error(statusText)
+          }
+
+          this.$router.push({ name: 'admin-restaurants' })
+      } catch (error) {
+
+          
+        // eslint-disable-next-line
+          console.log(error)
+          this.isProcessing = false
+          Toast.fire({
+            icon: 'error',
+            title: '無法更新餐廳，請稍後再試'
+          })
+
+        
       }
     },
 
-    fetchRestaurant (restaurantId) {
-         // eslint-disable-next-line
-      console.log('fetchRestaurant id:', restaurantId)
-      const { restaurant } = dummyData
-      this.restaurant = {
-        ...this.restaurant,
-        id: restaurant.id,
-        name: restaurant.name,
-        categoryId: restaurant.CategoryId,
-        tel: restaurant.tel,
-        address: restaurant.address,
-        description: restaurant.description,
-        image: restaurant.image,
-        openingHours: restaurant.opening_hours
+    async fetchRestaurant (restaurantId) {
+      try {
+        const { statusText, data } = await adminAPI.restaurant.getDetail({restaurantId})
+        
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
+        }
+
+        const { restaurant } = data
+        // eslint-disable-next-line
+        console.log(data)
+        this.restaurant = {
+          ...this.restaurant,
+          id: restaurant.id,
+          name: restaurant.name,
+          categoryId: restaurant.CategoryId,
+          tel: restaurant.tel,
+          address: restaurant.address,
+          description: restaurant.description,
+          image: restaurant.image,
+          openingHours: restaurant.opening_hours
+        }
+      } catch (error) {
+
+        Toast.fire({
+          icon:'error',
+          title: '無法取得資料，請稍後再試'
+        })
+
       }
+
+      
     }
   }
 }
