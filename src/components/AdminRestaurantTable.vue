@@ -80,7 +80,7 @@ export default {
   methods: {
     async fetchRestaurants () {
         try {
-            const { data, statusText } = await restaurantsAPI.getRestaurants()
+            const { data, statusText } = await restaurantsAPI.restaurant.get()
 
             if (statusText !== 'OK') {
                 throw new Error(statusText)
