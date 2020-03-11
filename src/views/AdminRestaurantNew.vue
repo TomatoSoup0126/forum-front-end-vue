@@ -2,6 +2,7 @@
  <div class="container py-5">
     <!-- 餐廳表單 AdminRestaurantForm -->
     <AdminRestaurantForm 
+      :is-processing="isProcessing"
       @after-submit="handleAfterSubmit"
       />
   </div>
@@ -10,18 +11,44 @@
 <script>
 import AdminRestaurantForm from '../components/AdminRestaurantForm.vue'
 
+import adminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
+
 export default {
+  data (){
+    return {
+      isProcessing: false
+    }
+  },
   components:{
     AdminRestaurantForm
   },
 
   methods: {
-    handleAfterSubmit (formData) {
-      // 透過 API 將表單資料送到伺服器
-      for (let [name, value] of formData.entries()) {
-        // eslint-disable-next-line
-        console.log(name + ': ' + value)
+    async handleAfterSubmit (formData) {
+
+      try {
+        this.isProcessing = true
+        const { statusText } = await adminAPI.restaurant.create({
+          formData
+        })
+
+        if (statusText !== 'OK') {
+
+          throw new Error(statusText)
+        }
+
+        this.$router.push({ name: 'admin-restaurant'})
+      } catch (error) {
+
+        this.isProcessing = false
+
+        Toast.fire({
+          icon: 'error',
+          title: '無法建立餐廳，請稍後再試'
+        })
       }
+      
     }
   }
   
