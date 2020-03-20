@@ -18,6 +18,7 @@
             type="button"
             class="btn btn-primary"
             @click.stop.prevent="createCategory"
+            :disabled = "isProcessing"
           >
             新增
           </button>
@@ -150,7 +151,8 @@ export default {
   data () {
     return {
       newCategoryName:'',
-      categories: []
+      categories: [],
+      isProcessing: false
     }
   },
   // 5. 調用 `fetchCategories` 方法
@@ -161,7 +163,7 @@ export default {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
     async fetchCategories () {
       try {
-        
+
         const { data , statusText } = await AdminAPI.categories.get()
 
         if (statusText !== 'OK') {
@@ -189,16 +191,51 @@ export default {
       
     },
 
-    createCategory () {
-      //串api來新增類別
+    async createCategory () {
 
-      //將新類別添加到類別陣列中
-      this.categories.push({
-        // id: uuid(),
-        name: this.newCategoryName
-      })
+      try {
 
-      this.newCategoryName = '' //清空欄位
+        this.isProcessing = true
+
+        const name = this.newCategoryName.trim()
+
+        if (!name) {
+          
+          Toast.fire({
+            icon:'error',
+            title: '名稱不宜為空白'
+          })
+
+        }
+        
+        const { data } = await AdminAPI.categories.post({name})
+
+        if (data.status !== "success") {
+           throw new Error(data.status)  
+        }
+
+
+        this.categories.push({
+          id: data.categoryId,
+          name: this.newCategoryName
+        })
+
+
+        
+        this.newCategoryName = '' //清空欄位
+        this.isProcessing = false
+
+      } catch (error) {
+
+        this.isProcessing = false
+
+        Toast.fire({
+          icon:'error',
+          title: '無法取得資料，請稍後再試'
+        })
+
+      }
+      
     },
 
      deleteCategory (categoryId) {
