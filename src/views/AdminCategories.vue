@@ -137,36 +137,10 @@
 
 <script>
 import AdminNav from '@/components/AdminNav'
-import uuid from 'uuid/v4'
-//  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: '中式料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 2,
-      name: '日本料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 3,
-      name: '義大利料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    },
-    {
-      id: 4,
-      name: '墨西哥料理',
-      createdAt: '2019-06-22T09:00:43.000Z',
-      updatedAt: '2019-06-22T09:00:43.000Z'
-    }
-  ]
-}
+// import uuid from 'uuid/v4'
+import AdminAPI from '../apis/admin'
+import { Toast } from '../utils/helpers'
+
 
 export default {
   components: {
@@ -185,11 +159,34 @@ export default {
   },
   methods: {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories () {
-      this.categories = dummyData.categories.map(category => ({
-        ...category,
-        isEditing: false
-      }))
+    async fetchCategories () {
+      try {
+        
+        const { data , statusText } = await AdminAPI.categories.get()
+
+        if (statusText !== 'OK') {
+
+          throw new Error(statusText)  
+
+        }
+
+        this.categories = data.categories.map(category => ({
+          ...category,
+          isEditing: false
+        }))
+
+
+      } catch (error) {
+        
+        Toast.fire({
+          icon:'error',
+          title: '無法取得資料，請稍後再試'
+        })
+
+      }
+
+
+      
     },
 
     createCategory () {
@@ -197,7 +194,7 @@ export default {
 
       //將新類別添加到類別陣列中
       this.categories.push({
-        id: uuid(),
+        // id: uuid(),
         name: this.newCategoryName
       })
 
