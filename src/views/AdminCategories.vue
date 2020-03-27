@@ -238,16 +238,41 @@ export default {
       
     },
 
-     deleteCategory (categoryId) {
-      // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
+    async deleteCategory (categoryId) {
 
-      // 將該餐廳類別從陣列中移除
-      this.categories = this.categories.filter(
-        category => category.id !== categoryId
-      )
+      try {
+        // TODO: 透過 API 告知伺服器欲刪除的餐廳類別
+        const {statusText} = await AdminAPI.categories.delete({categoryId})
+
+
+
+        if (statusText !== "OK") {
+          throw new Error(statusText)
+        }
+
+
+        // 將該餐廳類別從陣列中移除
+        this.categories = this.categories.filter(
+         category => category.id !== categoryId
+        )
+
+        Toast.fire({
+          icon: "success",
+          title: "刪除成功"
+        });
+      } catch (error) {
+        
+
+        Toast.fire({
+          icon:'error',
+          title: '無法刪除，請稍後再試'
+        })
+
+      }
+
     },
 
-        toggleIsEditing (categoryId) {
+    toggleIsEditing (categoryId) {
       this.categories = this.categories.map(category => {
         if (category.id !== categoryId) return category
         // 如果迴圈中的 category.id 是欲修改的 categoryId 則改變 isEditing 的值
