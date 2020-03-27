@@ -284,9 +284,42 @@ export default {
       })
     },
     // eslint-disable-next-line
-    updateCategory ({ categoryId, name }) {
-      // TODO: 透過 API 去向伺服器更新餐廳類別名稱
-      this.toggleIsEditing(categoryId)
+    async updateCategory ({ categoryId, name }) {
+
+      try {
+
+            // eslint-disable-next-line
+        console.log(categoryId)
+        
+        const res = await AdminAPI.categories.put({  categoryId,
+          name })
+
+     // eslint-disable-next-line
+        console.log(res)
+
+        // if (statusText !== 'OK') {
+        //   throw new Error(statusText)
+        // }
+
+        // TODO: 透過 API 去向伺服器更新餐廳類別名稱
+
+        this.toggleIsEditing(categoryId)
+
+        Toast.fire({
+          icon:'success',
+          title: '更新成功'
+        })
+
+
+      } catch (error) {
+        
+        Toast.fire({
+          icon:'error',
+          title: '無法更新，請稍後再試'
+        })
+
+      }
+
     },
 
     handleCancel (categoryId) {
