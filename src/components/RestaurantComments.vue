@@ -37,6 +37,8 @@
 <script>
 // 載入撰寫好的 mixin
 import { fromNowFilter } from './../utils/mixins'
+import commentAPI from '../apis/comments'
+import { Toast } from '../utils/helpers'
 
 
 const dummyUser = {
@@ -68,12 +70,29 @@ export default {
   },
 
   methods: {
-    handleDeleteButtonClick (commentId) {
+   async handleDeleteButtonClick (commentId) {
+     try {
+       const { statusText } = await commentAPI.deleteComment({commentId}) 
+
+       if (statusText !== 'OK') {
+         throw new Error(statusText)
+       }
+
       // eslint-disable-next-line
       console.log('handleDeleteButtonClick', commentId)
-      // TODO: 請求 API 伺服器刪除 id 為 commentId 的評論
+
       // 觸發父層事件 - $emit( '事件名稱' , 傳遞的資料 )
       this.$emit('after-delete-comment', commentId)
+
+     } catch (error) {
+
+       Toast.fire({
+         icon: 'error',
+         title: '無法刪除評論，請稍後再試'
+       })
+     }
+
+
     }
   }
 }

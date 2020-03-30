@@ -64,7 +64,7 @@ export default {
   },
 
   computed:{
-    ...mapState(['currentUser'])
+    ...mapState(["currentUser"])
   },
 
   methods: {
@@ -109,6 +109,12 @@ export default {
       this.restaurantComments = this.restaurantComments.filter(
         comment => comment.id !== commentId
       )
+
+      Toast.fire({
+        icon:'success',
+        title:'評論刪除成功！'
+      })
+
     },
 
     afterCreateComment (payload) {
