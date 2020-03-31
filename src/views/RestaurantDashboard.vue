@@ -19,7 +19,7 @@
     </div>
 
     <router-link
-      :to="{ name: 'restaurant', params: { id: 1 } }"
+      :to="{ name: 'restaurant', params: { id: restaurant.id } }"
     >回上一頁
     </router-link>
   </div>
@@ -29,87 +29,10 @@
 
 <script>
 
-const dummyData = {
-    "restaurant": {
-      "id": 1,
-      "name": "123",
-      "tel": "02-8888-0000",
-      "address": "01313 ketlch deive",
-      "opening_hours": "08:00",
-      "description": "dsfsafdsadfasasdfasdf",
-      "image": "https://loremflickr.com/320/240/restaurant,food/?random=22.148585495422335",
-      "viewCounts": 19,
-      "createdAt": "2019-11-20T06:25:42.921Z",
-      "updatedAt": "2020-02-25T14:21:20.382Z",
-      "CategoryId": 3,
-      "Category": {
-        "id": 3,
-        "name": "義大利料理",
-        "createdAt": "2019-06-22T09:00:43.000Z",
-        "updatedAt": "2019-06-22T09:00:43.000Z"
-      },
-      "FavoritedUsers": [],
-      "LikedUsers": [],
-      "Comments": [
-          {
-              "id": 1,
-              "text": "Voluptas omnis laudantium et non ut quia unde.",
-              "UserId": 2,
-              "RestaurantId": 1,
-              "createdAt": "2019-11-20T06:25:42.942Z",
-              "updatedAt": "2019-11-20T06:25:42.942Z",
-              "User": {
-                  "id": 2,
-                  "name": "user1",
-                  "email": "user1@example.com",
-                  "password": "$2a$10$ESv6iQjQ8oEe3/XGjw00PuSh1kjmG6Dkhd4YXa50boTlncJDxljAy",
-                  "isAdmin": false,
-                  "image": null,
-                  "createdAt": "2019-11-20T06:25:42.685Z",
-                  "updatedAt": "2019-11-21T09:55:30.970Z"
-              }
-          },
-          {
-              "id": 51,
-              "text": "Distinctio laborum explicabo quasi.",
-              "UserId": 2,
-              "RestaurantId": 1,
-              "createdAt": "2019-11-20T06:25:42.944Z",
-              "updatedAt": "2019-11-20T06:25:42.944Z",
-              "User": {
-                  "id": 2,
-                  "name": "user1",
-                  "email": "user1@example.com",
-                  "password": "$2a$10$ESv6iQjQ8oEe3/XGjw00PuSh1kjmG6Dkhd4YXa50boTlncJDxljAy",
-                  "isAdmin": false,
-                  "image": null,
-                  "createdAt": "2019-11-20T06:25:42.685Z",
-                  "updatedAt": "2019-11-21T09:55:30.970Z"
-              }
-          },
-          {
-              "id": 101,
-              "text": "Nihil iure quas.",
-              "UserId": 2,
-              "RestaurantId": 1,
-              "createdAt": "2019-11-20T06:25:42.946Z",
-              "updatedAt": "2019-11-20T06:25:42.946Z",
-              "User": {
-                  "id": 2,
-                  "name": "user1",
-                  "email": "user1@example.com",
-                  "password": "$2a$10$ESv6iQjQ8oEe3/XGjw00PuSh1kjmG6Dkhd4YXa50boTlncJDxljAy",
-                  "isAdmin": false,
-                  "image": null,
-                  "createdAt": "2019-11-20T06:25:42.685Z",
-                  "updatedAt": "2019-11-21T09:55:30.970Z"
-              }
-          }
-      ]
-  }
+import restaurantAPI from '../apis/restaurants'
+import { Toast } from '../utils/helpers'
 
 
-}
 
 export default {
   
@@ -137,25 +60,50 @@ export default {
     this.fetchRestaurant(restaurantId)
   },
 
-  methods: {
-    fetchRestaurant (restaurantId) {
-      // eslint-disable-next-line
-      console.log('fetchRestaurant id: ', restaurantId)
-      this.restaurant = {
-        id: dummyData.restaurant.id,
-        name: dummyData.restaurant.name,
-        categoryName: dummyData.restaurant.Category.name,
-        image: dummyData.restaurant.image,
-        openingHours: dummyData.restaurant.opening_hours,
-        tel: dummyData.restaurant.tel,
-        address: dummyData.restaurant.address,
-        description: dummyData.restaurant.description,
-        isFavorited: dummyData.isFavorited,
-        isLiked: dummyData.isLiked,
-        viewCounts: dummyData.restaurant.viewCounts
-      }
+  beforeRouteUpdate(to, from, next) {
+    const { id: restaurantId } = to.params
+    this.fetchRestaurant(restaurantId)
+    next()
+  },
 
-      this.restaurantComments = dummyData.restaurant.Comments
+  methods: {
+    async fetchRestaurant (restaurantId) {
+
+      try {
+
+        const { data, statusText } = await restaurantAPI.getRestaurant({restaurantId})
+
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
+        }
+
+
+        // // eslint-disable-next-line
+        // console.log('fetchRestaurant id: ', restaurantId)
+        this.restaurant = {
+          id: data.restaurant.id,
+          name: data.restaurant.name,
+          categoryName: data.restaurant.Category.name,
+          image: data.restaurant.image,
+          openingHours: data.restaurant.opening_hours,
+          tel: data.restaurant.tel,
+          address: data.restaurant.address,
+          description: data.restaurant.description,
+          isFavorited: data.isFavorited,
+          isLiked: data.isLiked,
+          viewCounts: data.restaurant.viewCounts
+        }
+
+        this.restaurantComments = data.restaurant.Comments
+      } catch (error) {
+        
+        Toast.fire({
+          icon: 'error',
+          title: '無法取得餐廳資訊，請稍後再試'
+        })
+
+      }
+     
     }
   }
 
