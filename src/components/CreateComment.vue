@@ -24,6 +24,7 @@
 // import uuid from 'uuid/v4'
 import commentAPI from '../apis/comments'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
 export default {
   props: {
@@ -37,6 +38,10 @@ export default {
     return {
       text: ''
     }
+  },
+
+  computed:{
+    ...mapState(['currentUser', 'isAuthenticated'])
   },
 
   methods: {

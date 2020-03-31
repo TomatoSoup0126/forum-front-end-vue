@@ -39,18 +39,8 @@
 import { fromNowFilter } from './../utils/mixins'
 import commentAPI from '../apis/comments'
 import { Toast } from '../utils/helpers'
+import { mapState } from 'vuex'
 
-
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: '管理者',
-    email: 'root@example.com',
-    image: 'https://i.pravatar.cc/300',
-    isAdmin: true
-  },
-  isAuthenticated: true
-}
 
 
 export default {
@@ -63,10 +53,8 @@ export default {
     }
   },
 
-  data () {
-    return {
-      currentUser: dummyUser.currentUser
-    }
+  computed:{
+    ...mapState(['currentUser', 'isAuthenticated'])
   },
 
   methods: {
