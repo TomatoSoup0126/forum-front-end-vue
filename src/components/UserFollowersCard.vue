@@ -1,11 +1,11 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <strong>{{followers.length}}</strong> Followers (追隨者)
+      <strong>{{user.Followers.length}}</strong> Followers (追隨者)
     </div>
      <div class="d-flex flex-wrap py-4 px-4">
        <router-link
-        v-for="follower in followers"
+        v-for="follower in user.Followers"
         :key="follower.id"
         :to="{name: 'user', params: { id: follower.id }}"
       >
@@ -22,8 +22,8 @@
 <script>
 export default {
   props:{
-    followers: {
-      type: Array,
+    user: {
+      type: Object,
       required: true
     }
   }

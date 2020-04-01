@@ -2,28 +2,28 @@
 <div class="card">
   <div class="card-body d-flex">
     <div>
-      <img :src="profile.image" style="width: 200px" alt="userImage">
+      <img :src="user.image" style="width: 200px" alt="userImage">
     </div>
     <div class="mx-4">
-      <h5 class="card-title">{{profile.name}}</h5>
-      <p>{{profile.email}}</p>
+      <h5 class="card-title">{{user.name}}</h5>
+      <p>{{user.email}}</p>
       <ul class="list-unstyled">
             <li>
-              <strong>{{profile.Comments.length}}</strong> 已評論餐廳
+              <strong>{{user.Comments.length}}</strong> 已評論餐廳
             </li>
             <li>
-              <strong>{{profile.FavoritedRestaurants.length}}</strong> 收藏的餐廳
+              <strong>{{user.FavoritedRestaurants.length}}</strong> 收藏的餐廳
             </li>
             <li>
-              <strong>{{profile.Followings.length}}</strong> followings (追蹤者)
+              <strong>{{user.Followings.length}}</strong> followings (追蹤者)
             </li>
             <li>
-              <strong>{{profile.Followers.length}}</strong> followers (追隨者)
+              <strong>{{user.Followers.length}}</strong> followers (追隨者)
             </li>
           </ul>
       <router-link
-        v-if="User.id === profile.id"
-        :to="{name: 'users-edit', params: {id: User.id}}"
+        v-if="isCurrentUser"
+        :to="{name: 'users-edit', params: {id: user.id}}"
         class="btn btn-primary"
         >
         Edit   
@@ -32,10 +32,10 @@
         v-else
         >
         <button
-          v-if="Followed"
+          v-if="isFollowed"
           type="button"
           class="btn btn-danger like mr-2"
-          @click.stop.prevent="deleteFollowing"
+          @click.stop.prevent="deleteFollowing(user.id)"
         >
           Unfollow
         </button>
@@ -43,7 +43,7 @@
           v-else
           type="button"
           class="btn btn-primary like mr-2"
-          @click.stop.prevent="addFollowing"
+          @click.stop.prevent="addFollowing(user.id)"
         >
           Follow
         </button>
@@ -55,19 +55,23 @@
 </template>
 
 <script>
+import userAPI from '../apis/users'
+import { Toast } from '../utils/helpers'
+
+
 export default {
   props:{
-    initialProfile: {
+    user: {
       type: Object,
       required: true
     },
     
-    currentUser: {
-      type: Object,
+    isCurrentUser: {
+      type: Boolean,
       required: true
     },
 
-    isFollowed: {
+    initialIsFollowed: {
       type: Boolean,
       required: true
     }
@@ -76,19 +80,62 @@ export default {
 
   data () {
     return {
-      profile: this.initialProfile,
-      User: this.currentUser,
-      Followed:this.isFollowed
+      isFollowed:this.initialIsFollowed
+    }
+  },
+
+  watch: {
+    initialIsFollowed(isFollowed) {
+      this.isFollowed = isFollowed;
     }
   },
 
   methods:{
-     addFollowing () {
-      this.Followed =  true
+    async addFollowing (userId) {
+      try {
+        
+        const { statusText } = await userAPI.addFollowing({userId})
+
+        // eslint-disable-next-line
+        console.log(statusText)
+
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
+        }
+
+
+        this.isFollowed = true
+      } catch (error) {
+        
+        Toast.fire({
+          icon:'error',
+          title:'無法加入追蹤，請稍後再試'
+        })
+      }
+
     },
 
-    deleteFollowing () {
-      this.Followed = false
+    async deleteFollowing (userId) {
+      try {
+        const { statusText } = await userAPI.deleteFollowing({userId})
+
+
+        // eslint-disable-next-line
+        console.log(statusText)
+
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
+        }
+
+
+        this.isFollowed = false
+      } catch (error) {
+        Toast.fire({
+          icon:'error',
+          title:'無法移除追蹤，請稍後再試'
+        })
+      }
+
     }
   }
 }
